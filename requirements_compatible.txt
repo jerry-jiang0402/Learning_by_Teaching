@@ -1,0 +1,18 @@
+# 兼容你现有环境的依赖列表
+# 这些包在你的环境中已经存在且版本合适
+
+# 核心依赖（已存在，无需重装）
+# fastapi==0.117.1
+# uvicorn==0.36.0  
+# websockets==11.0.3
+# openai==1.108.1
+# python-dotenv==1.1.1
+# pydantic==2.11.9
+# python-multipart==0.0.20
+# jinja2==3.1.6
+# python-jose==3.5.0
+# passlib==1.7.4
+
+# 如果缺少任何包，只安装缺少的：
+# pip install fastapi uvicorn websockets openai python-dotenv python-multipart jinja2 python-jose passlib
+
