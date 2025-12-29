@@ -213,5 +213,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <p align="center">
   <b>Learn by Teaching, Teach to Learn</b><br>
-  Made with ❤️ for better education
+  Made by Jiarui Jiang
 </p>
+
