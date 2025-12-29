@@ -2,6 +2,10 @@
 
 An innovative AI-powered educational platform based on the **"Learning by Teaching"** pedagogy. Students and an AI buddy take turns being the teacher and learner, creating a collaborative learning experience that deepens understanding through active explanation and questioning.
 
+<p align="center">
+  <img src="assets/screenshot.png" alt="Learning by Teaching Platform Screenshot" width="100%">
+</p>
+
 ![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
 ![Vue](https://img.shields.io/badge/Vue-3.x-green.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-teal.svg)
