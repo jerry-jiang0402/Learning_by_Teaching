@@ -3,6 +3,7 @@
 
 # OpenAI API Configuration
 OPENAI_API_KEY=sk-your-actual-openai-api-key-here
+OPENAI_BASE_URL=https://aifuture.pw/v1
 OPENAI_MODEL=gpt-4
 OPENAI_MAX_TOKENS=1000
 OPENAI_TEMPERATURE=0.7

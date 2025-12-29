@@ -5,15 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
-    "preview": "vite preview"
+    "build": "vite build",
+    "build:check": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "vue": "^3.3.8",
-    "vue-router": "^4.2.5",
-    "axios": "^1.6.2",
     "@vueuse/core": "^10.5.0",
-    "lucide-vue-next": "^0.292.0"
+    "axios": "^1.6.2",
+    "html2canvas": "^1.4.1",
+    "lucide-vue-next": "^0.292.0",
+    "vue": "^3.3.8",
+    "vue-router": "^4.2.5"
   },
   "devDependencies": {
     "@types/node": "^20.9.0",
