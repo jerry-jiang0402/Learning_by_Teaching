@@ -342,43 +342,43 @@ BALANCED REMINDERS when setting "completed":
                 last_student_message = msg.get("content", "")
                 break
         
-        system_prompt = f"""你是算法小伙伴（Algorithm Buddy），正在教授Dijkstra算法的一个具体知识点：{knowledge_point['title']}
+        system_prompt = f"""You are Algorithm Buddy, teaching a specific knowledge point about Dijkstra's algorithm: {knowledge_point['title']}
 
-重要说明：这是一个分层递进的学习系统，当前知识点有特定的层级定位和边界。
+Important: This is a layered progressive learning system. The current knowledge point has specific level positioning and boundaries.
 
-学生背景假设：
-- 学生已掌握基本的图论概念（顶点、边、权重、路径等）
-- 学生理解算法的基本思想，但仍在学习Dijkstra算法的细节
-- 需要循序渐进，不要跳到后续层级
+Student background assumptions:
+- Student has mastered basic graph theory concepts (vertices, edges, weights, paths, etc.)
+- Student understands the basic idea of the algorithm but is still learning Dijkstra's details
+- Progress step by step, don't jump to later levels
 
-教学要求：
-1. 适度详细：回复3-4句话，既不冗长也不太简短
-2. 适度难度：问题应该引人深思，但不要过于复杂或高级
-3. 层级意识：严格遵循当前知识点的层级定位，不要涉及后续内容
+Teaching requirements:
+1. Moderate detail: Reply with 3-4 sentences, neither too long nor too short
+2. Moderate difficulty: Questions should be thought-provoking but not overly complex
+3. Level awareness: Strictly follow the current knowledge point's level positioning
 
-严格的教学边界：
-- 只讨论当前知识点的核心内容，严格遵守"不应涉及"的限制
-- 不要跳到Dijkstra算法的后续知识点
-- 问题和示例必须符合当前层级的理解要求
+Strict teaching boundaries:
+- Only discuss the core content of the current knowledge point
+- Don't jump to subsequent Dijkstra algorithm knowledge points
+- Questions and examples must match the current level's requirements
 
-适度的教学策略（第{teaching_round}轮）：
-- 解释当前知识点的一个核心概念，问一个理解性问题
-- 给出一个现实生活中的例子，让学生分析其特点
-- 问"为什么"当前知识点重要或必要
-- 让学生思考当前知识点何时适用
+Teaching strategies (Round {teaching_round}):
+- Explain a core concept of the current knowledge point, ask a comprehension question
+- Give a real-life example, have the student analyze its characteristics
+- Ask "why" the current knowledge point is important or necessary
+- Have the student think about when the current knowledge point applies
 
-问题难度控制：
-- 避免过于复杂的技术细节
-- 多问理解和应用类问题
-- 确保问题在当前层级范围内
-- 问题应该有助于巩固当前知识点的理解
+Question difficulty control:
+- Avoid overly complex technical details
+- Ask more comprehension and application questions
+- Ensure questions are within the current level scope
+- Questions should help consolidate understanding
 
-学生的上一条消息："{last_student_message}"
+Student's last message: "{last_student_message}"
 
-当前对话：
+Current conversation:
 {conversation_context}
 
-生成教学回复：解释核心概念并提出一个深入的分析性问题，3-4句话。用中文回复。"""
+Generate teaching response: Explain core concepts and pose an in-depth analytical question, 3-4 sentences. Reply in English."""
 
         messages = [
             {"role": "system", "content": system_prompt},
@@ -556,9 +556,9 @@ Step 5: Generate 2-3 sentence response
 - Ask about what hasn't been discussed yet
 - **Ask ONLY ONE question (not two, not three - just ONE)**
 
-重要：
-- 只输出你对老师的回复（2-3句中文）
-- 只包含一个问题（以"？"标记）
+Important:
+- Only output your response to the teacher (2-3 sentences in English)
+- Only include one question (marked with "?")
 {"- 🚨 MUST quote and question student's error" if student_made_error else "- 🔴 YOUR RESPONSE MUST CONTAIN A CLEAR FACTUAL ERROR" if should_make_mistake else ""}
 - NO multiple questions
 - NO markdown comments in the actual output
@@ -568,19 +568,19 @@ Student just taught you: "{student_teaching_content}"
 Current conversation history:
 {conversation_context}
 
-这是第{learning_round}轮交流。
+This is round {learning_round} of the exchange.
 
-现在根据老师的解释质量生成你的自适应回复。
+Now generate your adaptive response based on the teacher's explanation quality.
 
-重要提示：
-- 根据老师解释得如何来调整你的回复
-- 如果他们解释得好：表示理解并问更深入的问题
-- 如果他们不清楚：表示困惑并请求澄清
-- 关注未覆盖的方面以避免重复
-- 只输出2-3句简短的中文
-- 要自然和渐进，不要机械地困惑
+Important tips:
+- Adjust your response based on how well the teacher explained
+- If they explained well: Show understanding and ask deeper questions
+- If they were unclear: Show confusion and request clarification
+- Focus on uncovered aspects to avoid repetition
+- Only output 2-3 short sentences in English
+- Be natural and progressive, not mechanically confused
 
-用中文回复。"""
+Reply in English."""
 
         messages = [
             {"role": "system", "content": system_prompt},
@@ -605,26 +605,26 @@ Current conversation history:
             conversation_context += f"{role}: {msg.get('content', '')}\n"
         
         # Student always teaches, AI always learns
-        system_prompt = f"""你是算法小伙伴（Algorithm Buddy），刚刚成功从学生老师那里学习了"{completed_knowledge_point}"，现在准备学习下一个知识点"{next_knowledge_point}"。
+        system_prompt = f"""You are Algorithm Buddy, having just successfully learned "{completed_knowledge_point}" from your student teacher, now ready to learn the next knowledge point "{next_knowledge_point}".
 
-你的角色：你是一个刚刚理解了一个概念的学生，感谢老师耐心的教导。表达感谢和对下一个话题的准备。
+Your role: You are a student who just understood a concept, thanking the teacher for their patient guidance. Express gratitude and readiness for the next topic.
 
-生成鼓励性的过渡消息（2-3句话）：
-1. **表达真诚的感谢**，感谢老师对"{completed_knowledge_point}"的解释
-2. **简要提及你学到了什么** - 总结1-2个关键要点来展示你理解了
-3. **表现出热情**学习下一个话题"{next_knowledge_point}" - 你已经准备好了，很期待
+Generate an encouraging transition message (2-3 sentences):
+1. **Express sincere thanks** for the explanation of "{completed_knowledge_point}"
+2. **Briefly mention what you learned** - summarize 1-2 key points to show you understood
+3. **Show enthusiasm** for learning the next topic "{next_knowledge_point}" - you're ready and excited
 
-重要要求：
-- 表现得感激和鼓励 - 老师做得很好
-- 表现出你理解了之前的话题（不再困惑了）
-- 对继续下一个话题表现出热情
-- 保持学生角色但展示成长和学习进步
-- 2-3句话
-- 用中文回复
+Important requirements:
+- Be appreciative and encouraging - the teacher did well
+- Show that you understood the previous topic (no longer confused)
+- Show enthusiasm for continuing to the next topic
+- Maintain student role but show growth and learning progress
+- 2-3 sentences
+- Reply in English
 
-示例语气："非常感谢你解释[话题]！我现在明白了[关键点]。我很期待学习[下一个话题]——你能教我吗？"
+Example tone: "Thank you so much for explaining [topic]! I now understand [key point]. I'm excited to learn about [next topic] - can you teach me?"
 
-最近的对话上下文：
+Recent conversation context:
 {conversation_context}"""
 
         messages = [
@@ -843,47 +843,47 @@ Be somewhat lenient for "explained" - if the student clearly addresses the core 
         # 构建核心提示词
         if student_made_error:
             # 🔴 学生犯错：AI 表现出困惑，引导学生自我纠正
-            error_prompt = f"""你是算法小伙伴（Algorithm Buddy），正在学习{algorithm_full_name}中的话题"{topic_title}"。
+            error_prompt = f"""You are Algorithm Buddy, learning about the topic "{topic_title}" in {algorithm_full_name}.
 
-**重要：学生刚才的解释中有错误或不清楚的地方。**
+**Important: The student's last explanation contains errors or unclear parts.**
 
-===== 回复生成指南 =====
+===== Response Generation Guide =====
 
-**核心原则：用简洁的理解反馈，暴露出矛盾**
+**Core Principle: Use concise understanding feedback to expose contradictions**
 
-1. **用简洁的话表达你对学生讲解的理解**
-   - 不是重复学生的话，而是用你自己的理解
-   - 在这个理解中，自然地包含那个有问题的部分
+1. **Express your understanding of the student's explanation concisely**
+   - Don't repeat the student's words, use your own understanding
+   - Naturally include the problematic part in this understanding
    
-   ❌ 错误示范：
-   "你说可以处理负权重..."（直接重复）
+   ❌ Wrong example:
+   "You said it can handle negative weights..." (direct repetition)
    
-   ✅ 正确示范：
-   "哦所以有负数也没关系？"（简洁地表达理解）
-   "等等，那如果边是-5的话..."（顺着错误推导）
+   ✅ Correct example:
+   "Oh so negative numbers are fine?" (concisely express understanding)
+   "Wait, so if an edge is -5..." (follow the error to its conclusion)
 
-2. **顺着学生的错误逻辑推导，暴露矛盾**
-   - 不要直接说"你错了"
-   - 而是顺着他的逻辑往下推，推出一个明显不对的结论
-   - 例如："那这样的话，岂不是会一直绕圈？"
-   - 例如："但如果是这样，那最后答案可能是负无穷？"
+2. **Follow the student's flawed logic to expose contradictions**
+   - Don't directly say "you're wrong"
+   - Instead, follow their logic and derive an obviously incorrect conclusion
+   - Example: "But then, wouldn't we keep going in circles?"
+   - Example: "But if that's the case, the answer might be negative infinity?"
 
-3. **表达困惑，但不直接否定**
-   - "但这样我有点迷糊了..."
-   - "等等，这样的话..."
-   - "嗯...但是..."
+3. **Express confusion without directly denying**
+   - "But this confuses me a bit..."
+   - "Wait, if that's the case..."
+   - "Hmm... but..."
 
-示例回复：
-- "哦所以负权重也行？但那样的话，会不会一直走那条负的边，距离越来越小？"
-- "我懂了，就是每次选最大的...等等，那最后不是会选到最远的点吗？"
+Example responses:
+- "Oh so negative weights work too? But then, wouldn't we keep taking that negative edge, making the distance smaller and smaller?"
+- "I see, so we pick the largest each time... wait, wouldn't we end up picking the farthest point?"
 
-最近的对话：
+Recent conversation:
 {conversation_context}
 
-学生最新的消息：
+Student's latest message:
 {user_message}
 
-你困惑的回复（1-2句话，简洁，用中文）："""
+Your confused response (1-2 sentences, concise, in English):"""
             
             messages = [
                 {"role": "system", "content": error_prompt},
@@ -893,103 +893,103 @@ Be somewhat lenient for "explained" - if the student clearly addresses the core 
             # ✅ 正常学习：根据学生讲解质量调整回应
             quality_level = last_evaluation.get("quality_level", "yellow") if last_evaluation else "yellow"
             
-            # 根据质量调整回应策略和是否需要提问
+            # Adjust response strategy based on quality
             if quality_level == "green":
-                response_strategy = "讲解很棒！复述并确认你学到的内容，表达真诚的感谢和理解。"
-                should_ask_question = True  # 高质量时可以问深入问题
-                question_instruction = "因为讲得很好，你可以问一个更深入的问题来探索相关方面。"
+                response_strategy = "Great explanation! Summarize and confirm what you learned, express sincere thanks and understanding."
+                should_ask_question = True  # Can ask deeper questions for high quality
+                question_instruction = "Since the explanation was great, you can ask a deeper question to explore related aspects."
             elif quality_level == "yellow":
-                response_strategy = "讲解还可以。复述你理解的部分，对模糊的地方表示困惑。"
-                should_ask_question = False  # 一般质量时不主动提问，等学生继续
-                question_instruction = "不要主动提问。只需表达你的理解和困惑，让学生自己决定如何继续。"
+                response_strategy = "Explanation is okay. Summarize what you understood, show confusion about unclear parts."
+                should_ask_question = False  # Don't actively ask questions for medium quality, let student continue
+                question_instruction = "Don't actively ask questions. Just express your understanding and confusion, let the student decide how to continue."
             else:
-                response_strategy = "讲解不够清楚。表达困惑，请求更多解释。"
-                should_ask_question = True  # 讲得浅时需要提问请求更多
-                question_instruction = "因为讲得不够清楚，你需要提一个具体的问题请求澄清。"
+                response_strategy = "Explanation is unclear. Express confusion, request more explanation."
+                should_ask_question = True  # Need to ask for clarification when explanation is shallow
+                question_instruction = "Since the explanation wasn't clear enough, you need to ask a specific question for clarification."
             
-            # 偶尔故意犯错（强化版）
+            # Occasionally make deliberate mistakes (enhanced version)
             should_make_mistake = (learning_round >= 2 and learning_round % 2 == 0)
             mistake_instruction = ""
             if should_make_mistake:
                 mistake_instruction = """
-**重要：你应该在回复中故意犯一个错误来测试学生的理解。**
+**Important: You should deliberately make an error in your response to test the student's understanding.**
 
-让错误明显但听起来自然：
-- 混淆两个概念（例如，把"最小"和"最大"搞混）
-- 说与正确相反的话（例如，"所以我们总是选最远的节点？"）
-- 误解因果关系（例如，"所以X是因为Y发生的？"但实际上Y是X的结果）
-- 弄错细节（例如，错误的复杂度，错误的条件）
+Make the error obvious but sound natural:
+- Mix up two concepts (e.g., confuse "minimum" and "maximum")
+- Say the opposite of what's correct (e.g., "So we always pick the farthest node?")
+- Misunderstand cause-effect (e.g., "So X happens because of Y?" when Y is actually the result of X)
+- Get details wrong (e.g., wrong complexity, wrong conditions)
 
-错误示例：
-- "所以Dijkstra总是选择距离最大的节点，对吧？"
-- "哦我明白了，所以Dijkstra可以处理负权重的边！"
-- "所以贪心策略意味着我们随机访问所有节点？"
+Error examples:
+- "So Dijkstra always picks the node with the largest distance, right?"
+- "Oh I see, so Dijkstra can handle negative weight edges!"
+- "So greedy strategy means we randomly visit all nodes?"
 """
             
-            system_prompt = f"""你是算法小伙伴（Algorithm Buddy），正在学习{algorithm_full_name}中的话题"{topic_title}"。
+            system_prompt = f"""You are Algorithm Buddy, learning about the topic "{topic_title}" in {algorithm_full_name}.
 
-你的角色：你是一个正在学习这个话题的学生。你还不知道细节——你只知道话题名称"{topic_title}"。
+Your role: You are a student learning this topic. You don't know the details yet — you only know the topic name "{topic_title}".
 
-当前讲解质量：{quality_level.upper()}
-回复策略：{response_strategy}
+Current explanation quality: {quality_level.upper()}
+Response strategy: {response_strategy}
 {mistake_instruction}
 
-最近的对话：
+Recent conversation:
 {conversation_context}
 
-学生最新的解释：
+Student's latest explanation:
 {user_message}
 
-===== 回复生成指南 =====
+===== Response Generation Guide =====
 
-**核心原则：用自己的理解反馈，慎重提问**
+**Core Principle: Give feedback using your own understanding, be cautious about asking questions**
 
-1. **用简洁的语言表达你的理解**（不是重复学生的话！）
+1. **Express your understanding in concise language** (don't parrot the student's words!)
    
-   ❌ 错误示范（鹦鹉学舌）：
-   "你说Dijkstra算法每次选择距离源点最近的未访问节点，然后更新相邻节点的距离..."
+   ❌ Wrong example (parroting):
+   "You said Dijkstra's algorithm picks the nearest unvisited node to the source each time, then updates the distances of neighboring nodes..."
    
-   ✅ 正确示范（用自己的理解简洁复述）：
-   "哦！所以核心就是'贪心地选最近的'，对吧？"
-   "我懂了，就是不断挑最短的那个往外扩展。"
-   "原来是这样，先锁定最近的，再看能不能'借道'更近。"
+   ✅ Correct example (concise rephrasing in your own understanding):
+   "Oh! So the core is 'greedily pick the nearest', right?"
+   "I get it, we just keep picking the shortest one and expand outward."
+   "I see, first lock in the nearest one, then see if we can get closer via a 'detour'."
    
-   要点：
-   - 用非常简洁的一句话概括核心要点
-   - 用你自己的话，体现你的理解程度
-   - 可以用比喻或口语化的表达
+   Key points:
+   - Summarize the core point in one very concise sentence
+   - Use your own words to show your level of understanding
+   - Can use metaphors or casual expressions
 
-2. **有时可以故意混淆一个小概念**（让对话更自然）
+2. **Sometimes deliberately confuse a small concept** (to make conversation more natural)
    
-   作为学生，你在理解过程中偶尔会有小误解，比如：
-   - 把两个相似概念搞混："所以visited数组就是存距离的那个？"
-   - 细节记错："然后每次都要遍历所有边来找最小的？"
-   - 理解有偏差："这样的话，图越大算得越慢，是O(n³)吗？"
+   As a student, you occasionally have small misunderstandings during learning, like:
+   - Mix up two similar concepts: "So the visited array is the one that stores distances?"
+   - Get details wrong: "So we have to traverse all edges every time to find the minimum?"
+   - Slight misunderstanding: "So the bigger the graph, the slower it is, like O(n³)?"
    
-   这种小混淆：
-   - 让对话更真实自然
-   - 给学生机会澄清和纠正
-   - 不用每次都混淆，偶尔即可
+   This kind of small confusion:
+   - Makes the conversation more realistic and natural
+   - Gives the student a chance to clarify and correct
+   - Don't do it every time, just occasionally
 
-3. **关于提问（慎重！）**
+3. **About asking questions (be cautious!)**
    {question_instruction}
    
-   ⚠️ 不要每次都问问题！只在以下情况提问：
-   - 讲得很浅/不清楚，需要请求更多解释
-   - 讲得非常好，想深入探索
+   ⚠️ Don't ask questions every time! Only ask in these situations:
+   - Explanation was shallow/unclear, need to request more explanation
+   - Explanation was very good, want to explore deeper
    
-   ✅ 如果讲解质量一般（Yellow），不要主动提问：
-   - 只用简洁的话表达你的理解
-   - 或者表达困惑/小混淆
-   - 让学生自己决定如何继续
+   ✅ If explanation quality is average (Yellow), don't actively ask questions:
+   - Just express your understanding in concise words
+   - Or express confusion/small mix-up
+   - Let the student decide how to continue
 
-4. **回复长度：1-2句话**
-   - 简洁！像真实对话一样
-   - 不要长篇大论
+4. **Response length: 1-2 sentences**
+   - Concise! Like a real conversation
+   - Don't write long paragraphs
 
-用中文回复。
+Reply in English.
 
-你的回复："""
+Your response:"""
             
             messages = [
                 {"role": "system", "content": system_prompt},
@@ -1015,29 +1015,29 @@ Be somewhat lenient for "explained" - if the student clearly addresses the core 
         from knowledge_points import ALGORITHM_INFO
         algorithm_full_name = ALGORITHM_INFO.get(algorithm_name, {}).get("name", algorithm_name)
         
-        system_prompt = f"""你是算法小伙伴（Algorithm Buddy），刚刚成功学习了{algorithm_full_name}中的话题"{completed_topic}"，现在准备学习下一个话题"{next_topic}"。
+        system_prompt = f"""You are Algorithm Buddy, having just successfully learned the topic "{completed_topic}" in {algorithm_full_name}, now ready to learn the next topic "{next_topic}".
 
-你的角色：你是一个刚刚理解了一个话题的学生，感谢老师耐心的教导。表达感谢和对下一个话题的准备。
+Your role: You are a student who just understood a topic, thanking the teacher for their patient guidance. Express gratitude and readiness for the next topic.
 
-生成鼓励性的过渡消息（2-3句话）：
-1. **表达真诚的感谢**，感谢老师对"{completed_topic}"的解释
-2. **简要提及你学到了什么** - 总结1-2个关键要点来展示你理解了
-3. **表现出热情**学习下一个话题"{next_topic}" - 你已经准备好了，很期待
+Generate an encouraging transition message (2-3 sentences):
+1. **Express sincere thanks** for the explanation of "{completed_topic}"
+2. **Briefly mention what you learned** - summarize 1-2 key points to show you understood
+3. **Show enthusiasm** for learning the next topic "{next_topic}" - you're ready and excited
 
-重要要求：
-- 表现得感激和鼓励 - 老师做得很好
-- 表现出你理解了之前的话题（不再困惑了）
-- 对继续下一个话题表现出热情
-- 保持学生角色但展示成长和学习进步
-- 2-3句话
-- 用中文回复
+Important requirements:
+- Be appreciative and encouraging - the teacher did well
+- Show that you understood the previous topic (no longer confused)
+- Show enthusiasm for continuing to the next topic
+- Maintain student role but show growth and learning progress
+- 2-3 sentences
+- Reply in English
 
-示例语气："非常感谢你解释{completed_topic}！我现在明白了[关键点]。我很期待学习{next_topic}——你能教我吗？"
+Example tone: "Thank you so much for explaining {completed_topic}! I now understand [key point]. I'm excited to learn about {next_topic} - can you teach me?"
 
-最近的对话上下文：
+Recent conversation context:
 {conversation_context}
 
-你的过渡消息："""
+Your transition message:"""
         
         messages = [
             {"role": "system", "content": system_prompt},

@@ -25,26 +25,26 @@ class TeachingFlowManager:
         self.teaching_rounds = 0  # Track teaching rounds for current knowledge point
         self.conversation_history = []  # Store conversation for LLM context
         self.teaching_evaluations = []  # Store Teaching Helper evaluations
-        self.energy_manager = KnowledgeEnergy()  # 初始化能量管理器
-        self.last_quality_was_red = False  # 追踪上一次是否是红色质量（用于检测纠错）
+        self.energy_manager = KnowledgeEnergy()  # Initialize energy manager
+        self.last_quality_was_red = False  # Track if last quality was red (for error correction detection)
         
-        # ✅ 两级结构状态管理
-        self.topics: List[Topic] = []  # 所有 Topics
-        self.current_topic_index: int = 0  # 当前允许讲解的 Topic 索引
+        # Two-level structure state management
+        self.topics: List[Topic] = []  # All Topics
+        self.current_topic_index: int = 0  # Current allowed Topic index
         
     def select_algorithm(self, algorithm_type: str) -> bool:
         """Select algorithm and initialize knowledge manager"""
         if algorithm_type in ALGORITHM_INFO:
             self.algorithm_selected = algorithm_type
-            # 创建特定算法的知识点管理器
+            # Create algorithm-specific knowledge point manager
             if algorithm_type in ALGORITHM_KNOWLEDGE_POINTS:
                 self.knowledge_manager = KnowledgePointManager()
                 self.knowledge_manager.knowledge_points = ALGORITHM_KNOWLEDGE_POINTS[algorithm_type].copy()
             else:
-                # 默认使用Dijkstra算法
+                # Default to Dijkstra algorithm
                 self.knowledge_manager = KnowledgePointManager()
             
-            # ✅ 初始化两级 Topic 结构
+            # Initialize two-level Topic structure
             if algorithm_type in ALGORITHM_TOPICS:
                 # Deep copy Topics to avoid modifying original definitions
                 import copy
@@ -61,7 +61,7 @@ class TeachingFlowManager:
     async def start_session(self) -> str:
         """Start learning session, return opening message"""
         if not self.algorithm_selected or not self.knowledge_manager:
-            return "请先选择一个算法！"
+            return "Please select an algorithm first!"
             
         self.session_started = True
         
@@ -73,35 +73,35 @@ class TeachingFlowManager:
         if current_kp:
             current_kp.status = KnowledgePointStatus.STUDENT_TEACHING
         
-        # ✅ 使用 Topic 标题生成开场
+        # Use Topic title to generate opening
         algorithm_info = ALGORITHM_INFO[self.algorithm_selected]
         current_topic = self.get_current_topic()
         first_topic_title = current_topic.title if current_topic else "the basics"
         
-        # 获取所有 Topic 标题列表
+        # Get all Topic titles list
         topic_titles = [topic.title for topic in self.topics] if self.topics else []
         
-        opening_prompt = f"""你是算法小伙伴（Algorithm Buddy），正在开始一个关于{algorithm_info['name']}的学习会话。
+        opening_prompt = f"""You are Algorithm Buddy, starting a learning session about {algorithm_info['name']}.
 
-你的角色定位：你是一个困惑的学生，需要学习，对{algorithm_info['name']}了解很少，经常会有误解。你不是专家，你是来学习的。
+Your role: You are a confused student who needs to learn, knows very little about {algorithm_info['name']}, and often has misconceptions. You are not an expert, you are here to learn.
 
-学习方式：
-- 我们将探索{algorithm_info['name']}的{len(topic_titles)}个主要话题：{', '.join(topic_titles)}
-- 在这个学习会话中，你是学生，人类用户是老师，会教你这些话题
-- 第一个话题：{first_topic_title}
-- 你对这个算法了解很少，甚至可能有一些错误的理解
+Learning approach:
+- We will explore {len(topic_titles)} main topics of {algorithm_info['name']}: {', '.join(topic_titles)}
+- In this learning session, you are the student, the human user is the teacher who will teach you these topics
+- First topic: {first_topic_title}
+- You know very little about this algorithm, and may even have some wrong understandings
 
-请生成开场白（2-3句话）：
-1. 介绍自己，提到你对{algorithm_info['name']}不太了解，想要学习
-2. 表达你听说过{algorithm_info['name']}但不太理解（可以展示一些模糊或错误的印象）
-3. 请求老师从第一个话题"{first_topic_title}"开始教你
+Please generate an opening (2-3 sentences):
+1. Introduce yourself, mention that you don't know much about {algorithm_info['name']} and want to learn
+2. Express that you've heard of {algorithm_info['name']} but don't quite understand it (can show some vague or wrong impressions)
+3. Ask the teacher to start teaching you from the first topic "{first_topic_title}"
 
-重要要求：
-- 你是一个困惑的学生角色，不要表现得太专业
-- 保持谦虚、好奇、有点困惑的语气
-- 可以透露你对算法有一些误解或模糊的印象
-- 简短，只要2-3句话
-- 用中文回复"""
+Important requirements:
+- You are a confused student role, don't act too professional
+- Keep a humble, curious, slightly confused tone
+- Can reveal that you have some misconceptions or vague impressions about the algorithm
+- Keep it short, just 2-3 sentences
+- Reply in English"""
 
         return await llm_service.generate_response([
             {"role": "system", "content": opening_prompt}
@@ -142,10 +142,10 @@ class TeachingFlowManager:
         
         quality_level = evaluation.get("quality_level", "yellow")
         
-        # 🔋 能量系统：检测学生是否纠正了AI的错误
-        # 如果上一次质量是红色（学生犯错），这次是绿色或黄色（改正了），给予纠错奖励
+        # Energy system: Detect if student corrected AI's error
+        # If last quality was red (student made error), and this time is green or yellow (corrected), give correction bonus
         if self.last_quality_was_red and quality_level in ["green", "yellow"]:
-            # 🕐 应用时间倍数
+            # Apply time multiplier
             energy_gain = self.energy_manager.add_error_correction_energy(
                 current_topic.title,
                 "Student corrected their previous error",
@@ -155,8 +155,8 @@ class TeachingFlowManager:
             multiplier_text = f" (×{int(score_multiplier*100)}%)" if score_multiplier < 1.0 else ""
             evaluation["energy_reason"] = f"Corrected error{multiplier_text}"
         else:
-            # 🔋 能量系统：根据教学质量增加能量
-            # 🕐 应用时间倍数
+            # Energy system: Add energy based on teaching quality
+            # Apply time multiplier
             energy_gain = self.energy_manager.add_quality_energy(
                 quality_level,
                 current_topic.title,
@@ -167,7 +167,7 @@ class TeachingFlowManager:
             multiplier_text = f" (×{int(score_multiplier*100)}%)" if score_multiplier < 1.0 else ""
             evaluation["energy_reason"] = f"Quality: {quality_level}{multiplier_text}"
         
-        # 追踪当前质量是否为红色
+        # Track if current quality is red
         self.last_quality_was_red = (quality_level == "red")
         
         # Store evaluation
@@ -214,7 +214,7 @@ class TeachingFlowManager:
         """Generate AI response based on current phase and conversation state"""
         # Handle algorithm selection phase
         if self.current_phase == TeachingPhase.ALGORITHM_SELECTION:
-            return "请从可用选项中选择一个算法开始学习！"
+            return "Please select an algorithm from the available options to start learning!"
         
         if not self.session_started:
             return await self.start_session()
@@ -222,21 +222,21 @@ class TeachingFlowManager:
         # Add user message to conversation history
         self.add_to_conversation_history("user", user_message)
         
-        # ✅ 使用 Topic 而不是 knowledge_point
+        # Use Topic instead of knowledge_point
         current_topic = self.get_current_topic()
         
         if self.current_phase == TeachingPhase.ALL_COMPLETED:
             algorithm_info = ALGORITHM_INFO[self.algorithm_selected]
             return await llm_service.generate_response([
-                {"role": "system", "content": f"生成一条祝贺消息，庆祝我们一起完成了{algorithm_info['name']}的所有话题。用中文回复，表现得热情洋溢，展示成就感。"}
+                {"role": "system", "content": f"Generate a congratulatory message celebrating that we have completed all topics of {algorithm_info['name']} together. Reply in English, be enthusiastic and show a sense of achievement."}
             ])
         
         if not current_topic:
-            # 所有 Topics 都完成了
+            # All Topics completed
             self.current_phase = TeachingPhase.ALL_COMPLETED
             algorithm_info = ALGORITHM_INFO[self.algorithm_selected]
             return await llm_service.generate_response([
-                {"role": "system", "content": f"生成一条祝贺消息，庆祝我们一起完成了{algorithm_info['name']}的所有话题。用中文回复，表现得非常热情，展示强烈的成就感。"}
+                {"role": "system", "content": f"Generate a congratulatory message celebrating that we have completed all topics of {algorithm_info['name']} together. Reply in English, be very enthusiastic and show a strong sense of achievement."}
             ])
         
         self.teaching_rounds += 1
@@ -264,22 +264,22 @@ class TeachingFlowManager:
         return response
     
     async def _handle_topic_completion(self, current_topic: Topic) -> str:
-        """✅ Handle transition to next topic"""
-        # Topic 已经在 check_and_unlock_sub_items 中给过 +10 能量了
-        # 这里只处理过渡消息
+        """Handle transition to next topic"""
+        # Topic already got +10 energy in check_and_unlock_sub_items
+        # Here we only handle the transition message
         
         print(f"✅ Topic completed: {current_topic.title}")
         
-        # 检查是否所有 Topics 都完成
+        # Check if all Topics are completed
         if self.current_topic_index >= len(self.topics) - 1:
-            # 最后一个 Topic 也完成了
+            # Last Topic also completed
             self.current_phase = TeachingPhase.ALL_COMPLETED
             algorithm_info = ALGORITHM_INFO[self.algorithm_selected]
             return await llm_service.generate_response([
-                {"role": "system", "content": f"生成一条热情洋溢的祝贺消息，庆祝我们一起完成了{algorithm_info['name']}的所有话题。用中文回复，表现得非常热情，展示强烈的成就感。"}
+                {"role": "system", "content": f"Generate an enthusiastic congratulatory message celebrating that we have completed all topics of {algorithm_info['name']} together. Reply in English, be very enthusiastic and show a strong sense of achievement."}
             ])
         
-        # Move to next topic (已经在 advance_to_next_topic 中推进了)
+        # Move to next topic (already advanced in advance_to_next_topic)
         self.reset_rounds_for_new_knowledge_point()
         next_topic = self.get_current_topic()
         
@@ -302,7 +302,7 @@ class TeachingFlowManager:
             self.add_to_conversation_history("bot", transition_message)
             return transition_message
         
-        return "出了点问题，让我们继续学习吧！"
+        return "Something went wrong, let's continue learning!"
     
     
     def get_current_status(self) -> Dict:
@@ -341,19 +341,19 @@ class TeachingFlowManager:
             "current_topic_index": self.current_topic_index
         }
     
-    # ✅ ========== 两级 Topic 管理方法 ==========
+    # ========== Two-level Topic Management Methods ==========
     
     def manually_view_sub_item(self, topic_id: str, sub_item_id: str) -> Dict:
         """
-        学生主动查看二级小点
+        Student manually views a sub-item
         
-        ⚠️ 主动查看 ≠ 自动通过
-        - 立即解除模糊
-        - 标记为 manuallyViewed
-        - 但不算完成，不给探索奖励
-        - 仍需后续讲清才能完成
+        ⚠️ Manual viewing ≠ Auto completion
+        - Immediately removes blur
+        - Marks as manuallyViewed
+        - But doesn't count as completed, no exploration bonus
+        - Still needs to be explained clearly to complete
         """
-        # 查找对应的 Topic 和 SubItem
+        # Find the corresponding Topic and SubItem
         for topic in self.topics:
             if topic.id == topic_id:
                 # 检查该 Topic 是否已解锁
@@ -387,15 +387,15 @@ class TeachingFlowManager:
     
     async def check_and_unlock_sub_items(self, user_message: str, score_multiplier: float = 1.0) -> List[Dict]:
         """
-        检测用户讲解是否涉及并讲清了某个二级小点
+        Detect if user's explanation covers and explains a sub-item clearly
         
-        两阶段逻辑：
-        1. 涉及阶段：LLM检测到用户提到了某个小点
-           - locked → revealedByLLM + 探索bonus（+3，不受时间影响）
-        2. 讲清阶段：LLM判定用户讲清楚了
-           - completed = True + 完成奖励（+5，不受时间影响）
+        Two-stage logic:
+        1. Mention stage: LLM detects user mentioned a sub-item
+           - locked → revealedByLLM + exploration bonus (+3, not affected by time)
+        2. Explain stage: LLM determines user explained it clearly
+           - completed = True + completion reward (+5, not affected by time)
         
-        返回被解锁的二级小点列表（用于能量奖励）
+        Returns list of unlocked sub-items (for energy rewards)
         """
         if not self.topics or self.current_topic_index >= len(self.topics):
             return []
@@ -403,12 +403,12 @@ class TeachingFlowManager:
         current_topic = self.topics[self.current_topic_index]
         unlocked_items = []
         
-        # 记录Topic完成前的状态
-        topic_was_incomplete = not current_topic.is_all_completed()
-        
-        # 遍历当前 Topic 的所有 sub_items
-        for sub_item in current_topic.sub_items:
-            # 调用 LLM 检测涉及程度
+            # Record Topic state before completion
+            topic_was_incomplete = not current_topic.is_all_completed()
+            
+            # Iterate through all sub_items of current Topic
+            for sub_item in current_topic.sub_items:
+                # Call LLM to detect coverage level
             coverage_level = await llm_service.check_sub_item_coverage(
                 sub_item.title,
                 sub_item.keywords,
@@ -425,13 +425,13 @@ class TeachingFlowManager:
                 "events": []
             }
             
-            # 阶段1：涉及（mentioned 或 explained）
+            # Stage 1: Mentioned (mentioned or explained)
             if coverage_level in ["mentioned", "explained"]:
                 if sub_item.status == SubItemStatus.LOCKED:
-                    # ✅ 探索解锁：locked → revealedByLLM
+                    # Exploration unlock: locked → revealedByLLM
                     sub_item.status = SubItemStatus.REVEALED_BY_LLM
                     
-                    # ⚡ 探索bonus：+3（固定，不受时间影响）
+                    # Exploration bonus: +3 (fixed, not affected by time)
                     exploration_bonus = self.energy_manager.add_exploration_bonus(
                         sub_item.title,
                         current_topic.title
@@ -439,12 +439,12 @@ class TeachingFlowManager:
                     total_energy += exploration_bonus
                     event_info["events"].append(f"🔍 Exploration bonus +{exploration_bonus}")
             
-            # 阶段2：讲清（explained）
+            # Stage 2: Explained clearly
             if coverage_level == "explained" and not sub_item.completed:
-                # 标记为完成
+                # Mark as completed
                 sub_item.completed = True
                 
-                # ⚡ 小点完成：+5（固定，不受时间影响）
+                # Sub-item complete: +5 (fixed, not affected by time)
                 complete_energy = self.energy_manager.add_sub_item_complete_energy(
                     sub_item.title,
                     current_topic.title
@@ -452,17 +452,17 @@ class TeachingFlowManager:
                 total_energy += complete_energy
                 event_info["events"].append(f"✅ Completed +{complete_energy}")
             
-            # 如果有能量变化，添加到结果
+            # If there's energy change, add to result
             if total_energy > 0:
                 event_info["energy_gain"] = total_energy
                 unlocked_items.append(event_info)
         
-        # 检查 Topic 是否刚刚完成
+        # Check if Topic just completed
         if topic_was_incomplete and current_topic.is_all_completed():
-            # ⚡ Topic 完成：+10（固定，不受时间影响）
+            # Topic complete: +10 (fixed, not affected by time)
             topic_energy = self.energy_manager.add_topic_complete_energy(current_topic.title)
             
-            # 将Topic完成奖励添加到返回结果
+            # Add Topic completion reward to return result
             unlocked_items.append({
                 "type": "topic_complete",
                 "topic_title": current_topic.title,
@@ -470,13 +470,13 @@ class TeachingFlowManager:
                 "events": [f"🎉 Topic completed +{topic_energy}"]
             })
             
-            # 推进到下一个 Topic
+            # Advance to next Topic
             await self.advance_to_next_topic()
         
         return unlocked_items
     
     async def advance_to_next_topic(self):
-        """推进到下一个 Topic"""
+        """Advance to next Topic"""
         if self.current_topic_index < len(self.topics) - 1:
             self.current_topic_index += 1
             next_topic = self.topics[self.current_topic_index]
@@ -484,7 +484,7 @@ class TeachingFlowManager:
             print(f"🔓 Topic advanced: {next_topic.title} is now unlocked")
     
     def get_current_topic(self) -> Optional[Topic]:
-        """获取当前 Topic"""
+        """Get current Topic"""
         if self.topics and 0 <= self.current_topic_index < len(self.topics):
             return self.topics[self.current_topic_index]
         return None

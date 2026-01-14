@@ -1,4 +1,4 @@
-# Dijkstra算法知识点定义
+# Algorithm Knowledge Points Definition
 from typing import List, Dict, Optional
 from enum import Enum
 
@@ -8,11 +8,11 @@ class KnowledgePointStatus(Enum):
     STUDENT_TEACHING = "student_teaching"
     COMPLETED = "completed"
 
-# ✅ 二级小点的三种状态
+# Three states for sub-items
 class SubItemStatus(Enum):
-    LOCKED = "locked"  # 未查看 & 未涉及（默认模糊）
-    MANUALLY_VIEWED = "manuallyViewed"  # 被学生主动点击查看
-    REVEALED_BY_LLM = "revealedByLLM"  # 通过讲解被系统判定"探索解锁"
+    LOCKED = "locked"  # Not viewed & not mentioned (blurred by default)
+    MANUALLY_VIEWED = "manuallyViewed"  # Manually clicked to view by student
+    REVEALED_BY_LLM = "revealedByLLM"  # Unlocked through explanation (exploration unlock)
 
 class KnowledgePoint:
     def __init__(self, id: str, title: str, description: str, ai_teaching_content: str, expected_student_concepts: List[str]):
@@ -238,16 +238,16 @@ ALGORITHM_KNOWLEDGE_POINTS = {
     "mergesort": MERGESORT_KNOWLEDGE_POINTS
 }
 
-# ========== ✅ 两级结构定义：Progressive Topic Board ==========
+# ========== Two-level Structure Definition: Progressive Topic Board ==========
 
 class SubItem:
-    """二级小点：可被独立评估和解锁的最小单元"""
+    """Sub-item: The smallest unit that can be independently evaluated and unlocked"""
     def __init__(self, id: str, title: str, keywords: List[str]):
         self.id = id
-        self.title = title  # 具体的教学点名称
-        self.keywords = keywords  # LLM 用于检测的关键词
+        self.title = title  # Specific teaching point name
+        self.keywords = keywords  # Keywords used by LLM for detection
         self.status = SubItemStatus.LOCKED
-        self.completed = False  # LLM 判定"讲清楚"
+        self.completed = False  # LLM determines "explained clearly"
     
     def to_dict(self) -> Dict:
         return {
@@ -258,15 +258,15 @@ class SubItem:
         }
 
 class Topic:
-    """一级 Topic：结构骨架，对学生可见"""
+    """Topic: Structural skeleton, visible to students"""
     def __init__(self, id: str, title: str, sub_items: List[SubItem]):
         self.id = id
-        self.title = title  # 例如："Basic Concept"
+        self.title = title  # e.g.: "Basic Concept"
         self.sub_items = sub_items
-        self.unlocked = False  # 是否允许讲解此 Topic
+        self.unlocked = False  # Whether this Topic is allowed to be taught
     
     def is_all_completed(self) -> bool:
-        """检查该 Topic 下的所有二级小点是否都完成"""
+        """Check if all sub-items under this Topic are completed"""
         return all(item.completed for item in self.sub_items)
     
     def to_dict(self) -> Dict:
@@ -278,7 +278,7 @@ class Topic:
             "all_completed": self.is_all_completed()
         }
 
-# ========== Dijkstra 两级结构 ==========
+# ========== Dijkstra Two-level Structure ==========
 DIJKSTRA_TOPICS = [
     Topic(
         id="basic_concept",
@@ -332,7 +332,7 @@ DIJKSTRA_TOPICS = [
     )
 ]
 
-# ========== Quick Sort 两级结构 ==========
+# ========== Quick Sort Two-level Structure ==========
 QUICKSORT_TOPICS = [
     Topic(
         id="basic_concept",
@@ -386,7 +386,7 @@ QUICKSORT_TOPICS = [
     )
 ]
 
-# ========== Merge Sort 两级结构 ==========
+# ========== Merge Sort Two-level Structure ==========
 MERGESORT_TOPICS = [
     Topic(
         id="basic_concept",
@@ -438,7 +438,7 @@ MERGESORT_TOPICS = [
     )
 ]
 
-# ========== 两级结构映射 ==========
+# ========== Two-level Structure Mapping ==========
 ALGORITHM_TOPICS = {
     "dijkstra": DIJKSTRA_TOPICS,
     "quicksort": QUICKSORT_TOPICS,

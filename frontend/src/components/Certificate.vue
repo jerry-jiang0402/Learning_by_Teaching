@@ -31,10 +31,10 @@
             </div>
           </div>
 
-          <!-- 标题 -->
+          <!-- Title -->
           <div class="text-center mb-6">
             <h1 class="text-3xl font-bold bg-gradient-to-r bg-clip-text text-transparent" :class="getGradeTitleGradient()">
-              教师证书
+              Teaching Certificate
             </h1>
             <p class="text-sm text-gray-500 mt-1 font-serif italic">Certificate of Teaching Excellence</p>
           </div>
@@ -46,13 +46,13 @@
             <div class="h-px w-20 bg-gradient-to-l from-transparent to-amber-300"></div>
           </div>
 
-          <!-- 证书正文 -->
+          <!-- Certificate Body -->
           <div class="text-center mb-6">
-            <p class="text-gray-600 mb-2">兹证明</p>
-            <p class="text-2xl font-bold text-gray-800 mb-2">优秀学习者</p>
-            <p class="text-gray-600 mb-4">已成功完成</p>
+            <p class="text-gray-600 mb-2">This certifies that</p>
+            <p class="text-2xl font-bold text-gray-800 mb-2">Outstanding Learner</p>
+            <p class="text-gray-600 mb-4">has successfully completed the</p>
             <p class="text-xl font-semibold text-amber-700">{{ algorithmName }}</p>
-            <p class="text-gray-600 mt-2">的教学学习课程</p>
+            <p class="text-gray-600 mt-2">Teaching & Learning Course</p>
           </div>
 
           <!-- 成就等级 -->
@@ -72,22 +72,22 @@
               <span class="text-2xl">⚡</span>
             </div>
             
-            <!-- 统计数据 -->
+            <!-- Statistics -->
             <div class="grid grid-cols-4 gap-2 text-center">
               <div class="bg-white/80 rounded-lg p-2">
-                <p class="text-xs text-gray-500">话题完成</p>
+                <p class="text-xs text-gray-500">Topics Done</p>
                 <p class="text-lg font-bold text-gray-700">{{ stats.topicsCompleted }}/{{ stats.totalTopics }}</p>
               </div>
               <div class="bg-white/80 rounded-lg p-2">
-                <p class="text-xs text-gray-500">讲解次数</p>
+                <p class="text-xs text-gray-500">Explanations</p>
                 <p class="text-lg font-bold text-gray-700">{{ stats.explanations }}</p>
               </div>
               <div class="bg-white/80 rounded-lg p-2">
-                <p class="text-xs text-gray-500">纠正错误</p>
+                <p class="text-xs text-gray-500">Corrections</p>
                 <p class="text-lg font-bold text-gray-700">{{ stats.corrections }}</p>
               </div>
               <div class="bg-white/80 rounded-lg p-2">
-                <p class="text-xs text-gray-500">探索发现</p>
+                <p class="text-xs text-gray-500">Discoveries</p>
                 <p class="text-lg font-bold text-gray-700">{{ stats.discoveries }}</p>
               </div>
             </div>
@@ -118,20 +118,20 @@
         <div class="h-3 bg-gradient-to-r" :class="getGradeGradient()"></div>
       </div>
 
-      <!-- 保存按钮 -->
+      <!-- Save Button -->
       <div class="flex justify-center mt-6 space-x-4">
         <button 
           @click="saveCertificate"
           class="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center space-x-2"
         >
           <span>💾</span>
-          <span>保存证书</span>
+          <span>Save Certificate</span>
         </button>
         <button 
           @click="$emit('close')"
           class="px-6 py-3 bg-white text-gray-700 font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
         >
-          关闭
+          Close
         </button>
       </div>
     </div>
@@ -162,10 +162,11 @@ const certificateRef = ref<HTMLElement | null>(null)
 
 const currentDate = computed(() => {
   const date = new Date()
-  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' }
+  return date.toLocaleDateString('en-US', options)
 })
 
-// 获取等级
+// Get grade
 const getGrade = () => {
   if (props.totalEnergy >= 250) return 'master'
   if (props.totalEnergy >= 200) return 'proficient'
@@ -173,14 +174,14 @@ const getGrade = () => {
   return 'growing'
 }
 
-// 等级标题
+// Grade title
 const getGradeTitle = () => {
   const grade = getGrade()
   switch (grade) {
-    case 'master': return '🏆 Master Teacher 大师教师'
-    case 'proficient': return '🥇 Proficient Educator 优秀教育者'
-    case 'competent': return '🥈 Competent Learner 合格学习者'
-    default: return '🌱 Growing Teacher 成长中的教师'
+    case 'master': return '🏆 Master Teacher'
+    case 'proficient': return '🥇 Proficient Educator'
+    case 'competent': return '🥈 Competent Learner'
+    default: return '🌱 Growing Teacher'
   }
 }
 
@@ -195,18 +196,18 @@ const getGradeEmoji = () => {
   }
 }
 
-// 等级评语
+// Grade comment
 const getGradeComment = () => {
   const grade = getGrade()
   switch (grade) {
     case 'master': 
-      return '你展现了卓越的教学能力，对知识的理解深刻透彻，表达清晰有力。你已经是真正的大师！'
+      return 'You demonstrated exceptional teaching ability with deep understanding and clear expression. You are a true master!'
     case 'proficient': 
-      return '你的教学表现出色，展示了扎实的知识功底和良好的表达能力。继续保持！'
+      return 'Your teaching performance was outstanding, showing solid knowledge and excellent communication skills. Keep it up!'
     case 'competent': 
-      return '你成功完成了学习任务，展现了良好的学习态度。继续努力，你会变得更好！'
+      return 'You successfully completed the learning tasks with a great attitude. Keep going, you will get even better!'
     default: 
-      return '你迈出了学习的第一步，这很棒！持续练习，你的教学能力一定会不断提升！'
+      return 'You took the first step in learning, and that\'s wonderful! Keep practicing, your teaching skills will definitely improve!'
   }
 }
 
@@ -254,7 +255,7 @@ const getGradeTextColor = () => {
   }
 }
 
-// 保存证书
+// Save certificate
 const saveCertificate = async () => {
   if (!certificateRef.value) return
   
@@ -266,12 +267,12 @@ const saveCertificate = async () => {
     })
     
     const link = document.createElement('a')
-    link.download = `教师证书_${props.algorithmName}_${new Date().toISOString().split('T')[0]}.png`
+    link.download = `Teaching_Certificate_${props.algorithmName}_${new Date().toISOString().split('T')[0]}.png`
     link.href = canvas.toDataURL('image/png')
     link.click()
   } catch (error) {
     console.error('Failed to save certificate:', error)
-    alert('保存证书失败，请重试')
+    alert('Failed to save certificate, please try again')
   }
 }
 </script>
@@ -299,6 +300,7 @@ const saveCertificate = async () => {
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 </style>
+
 
 
 

@@ -491,7 +491,7 @@ const updateDashboardStats = async () => {
   }
 }
 
-// 🎓 显示教师证书
+// Show teacher certificate
 const showCertificateModal = (stats: DashboardStats) => {
   const energyStats = stats.energy_stats
   const topics = stats.topics || []
@@ -500,7 +500,7 @@ const showCertificateModal = (stats: DashboardStats) => {
     totalEnergy: energyStats?.current_energy || 0,
     algorithmName: stats.selected_algorithm 
       ? (availableAlgorithms.value[stats.selected_algorithm]?.name || stats.selected_algorithm)
-      : '算法',
+      : 'Algorithm',
     stats: {
       topicsCompleted: topics.filter(t => t.all_completed).length,
       totalTopics: topics.length,
