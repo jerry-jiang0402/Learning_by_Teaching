@@ -403,12 +403,12 @@ Important requirements:
         current_topic = self.topics[self.current_topic_index]
         unlocked_items = []
         
-            # Record Topic state before completion
-            topic_was_incomplete = not current_topic.is_all_completed()
-            
-            # Iterate through all sub_items of current Topic
-            for sub_item in current_topic.sub_items:
-                # Call LLM to detect coverage level
+        # Record Topic state before completion
+        topic_was_incomplete = not current_topic.is_all_completed()
+        
+        # Iterate through all sub_items of current Topic
+        for sub_item in current_topic.sub_items:
+            # Call LLM to detect coverage level
             coverage_level = await llm_service.check_sub_item_coverage(
                 sub_item.title,
                 sub_item.keywords,
