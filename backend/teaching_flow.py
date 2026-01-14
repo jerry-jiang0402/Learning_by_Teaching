@@ -268,7 +268,7 @@ Important requirements:
         # Topic already got +10 energy in check_and_unlock_sub_items
         # Here we only handle the transition message
         
-        print(f"✅ Topic completed: {current_topic.title}")
+        print(f"[OK] Topic completed: {current_topic.title}")
         
         # Check if all Topics are completed
         if self.current_topic_index >= len(self.topics) - 1:
@@ -284,20 +284,20 @@ Important requirements:
         next_topic = self.get_current_topic()
         
         # Debug info
-        print(f"🔄 Topic switching: current index={self.current_topic_index}")
+        print(f"[SWITCH] Topic switching: current index={self.current_topic_index}")
         if next_topic:
-            print(f"📚 Next topic: {next_topic.title}")
+            print(f"[NEXT] Next topic: {next_topic.title}")
         
         if next_topic:
             # Generate transition message with memory continuity
-            print(f"🎭 Generating transition message: from '{current_topic.title}' to '{next_topic.title}'")
+            print(f"[TRANS] Generating transition message: from '{current_topic.title}' to '{next_topic.title}'")
             transition_message = await llm_service.generate_topic_transition_message(
                 current_topic.title,
                 next_topic.title,
                 self.conversation_history,
                 self.algorithm_selected
             )
-            print(f"📝 Generated transition message: {transition_message}")
+            print(f"[MSG] Generated transition message: {transition_message}")
             
             self.add_to_conversation_history("bot", transition_message)
             return transition_message
@@ -481,7 +481,7 @@ Important requirements:
             self.current_topic_index += 1
             next_topic = self.topics[self.current_topic_index]
             next_topic.unlocked = True
-            print(f"🔓 Topic advanced: {next_topic.title} is now unlocked")
+            print(f"[UNLOCK] Topic advanced: {next_topic.title} is now unlocked")
     
     def get_current_topic(self) -> Optional[Topic]:
         """Get current Topic"""

@@ -17,10 +17,12 @@ if __name__ == "__main__":
     print("Press Ctrl+C to stop")
     print("-" * 50)
     
+    # Set reload=False to prevent auto-restart during conversations
+    # This keeps WebSocket connections stable
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
         port=8000,
-        reload=True,
+        reload=False,  # Disabled to prevent connection drops
         app_dir="backend"
     )
